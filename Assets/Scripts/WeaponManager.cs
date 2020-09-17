@@ -11,16 +11,6 @@ public class WeaponManager : MonoBehaviour
         _weapon = GameObject.FindWithTag("Weapon");
         _weapon.SetActive(_isArmed);
     }
-    void Update()
-    {
-        // if (Input.GetButtonDown("Fire2"))
-        // {
-        //     _isArmed = !_isArmed;
-        //     _weapon.SetActive(_isArmed);
-        //     SendMessage("SwitchArmed");
-        // }
-
-    }
     public void UpdateWeapon()
     {
         if (Input.GetKeyDown(KeyCode.H))

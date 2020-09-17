@@ -114,4 +114,9 @@ public class AnimationManager : MonoBehaviour
     {
         animanor.SetTrigger("GotDamage");
     }
+
+    public void Die()
+    {
+        animanor.SetTrigger("Die");
+    }
 }

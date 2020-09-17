@@ -4,18 +4,26 @@ using UnityEngine;
 
 public class HealthManager : MonoBehaviour
 {
-    public int m_health = 3;
+    int _health = 3;
+    bool _isAlive = true;
     void Update()
     {
-        if (m_health == 0)
+        if (_health == 0 && _isAlive)
         {
-            Debug.Log("Im dead");
-            Destroy(this.gameObject);
+            _isAlive = false;
+            StartCoroutine(_Die());
         }
+    }
+    IEnumerator _Die()
+    {
+        Debug.Log("Im dead");
+        SendMessage("Die");
+        yield return new WaitForSeconds(3f);
+        Destroy(this.gameObject);
     }
     public void GetDamage()
     {
-        m_health--;
+        _health--;
         SendMessage("GotDamage");
     }
 }
