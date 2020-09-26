@@ -7,13 +7,16 @@ public class AnimationManager : MonoBehaviour
     Animator animanor;
     PlayerMove playerMover;
     State lastKnownState;
+    HealthManager m_healthManager;
     float timeSinceLastTrigger;
     public bool isArmed = true;
     bool _isAttacking = false;
+    bool _isBlocking = false;
     void Start()
     {
         animanor = GetComponentInChildren<Animator>();
         playerMover = GetComponent<PlayerMove>();
+        m_healthManager = GetComponent<HealthManager>();
         lastKnownState = playerMover.GetState();
     }
     void UpdateUnArmed(State state)
@@ -21,7 +24,6 @@ public class AnimationManager : MonoBehaviour
         switch(state)
         {
             case State.Idle:
-            animanor.SetTrigger("toIdle");
             animanor.SetBool("isIdle",true);
             animanor.SetBool("isRunning",false);
             animanor.SetBool("isJumping",false);
@@ -49,11 +51,18 @@ public class AnimationManager : MonoBehaviour
         if (_isAttacking)
         {
             animanor.SetBool("isAttacking",true);
-            // animanor.SetBool("isIdle",false);
         }
         else
         {
             animanor.SetBool("isAttacking",false);
+        }
+        if (_isBlocking)
+        {
+            animanor.SetBool("isBlocking",true);
+        }
+        else
+        {
+            animanor.SetBool("isBlocking",false);
         }
         switch(state)
         {
@@ -95,7 +104,8 @@ public class AnimationManager : MonoBehaviour
     {
         var curState = playerMover.GetState();
         lastKnownState = curState;
-        UpdateAnimation(lastKnownState);
+        if(m_healthManager.Alive())
+            UpdateAnimation(lastKnownState);
     }
     public void SwitchArmed()
     {
@@ -108,6 +118,15 @@ public class AnimationManager : MonoBehaviour
     public void StopAttacking()
     {
         _isAttacking = false;
+    }
+
+    public void StartBlocking()
+    {
+        _isBlocking = true;
+    }
+    public void StopBlocking()
+    {
+        _isBlocking = false;
     }
 
     public void GotDamage()

@@ -15,40 +15,6 @@ public class PlayerMove : MonoBehaviour
     Vector3 velocity;
     bool isGrounded;
     public State currentState;
-    void Update()
-    {
-        // currentState = State.Idle;
-        
-        // float x = Input.GetAxis("Horizontal");
-        // float z = Input.GetAxis("Vertical");
-        // Vector3 move = transform.right * x + transform.forward * z;
-
-        // if(move != Vector3.zero)
-        // {   
-        //     if (!GetComponent<WeaponManager>().isArmed())
-        //     {
-        //         controller.Move(move * speed * Time.deltaTime);
-        //         if (currentState != State.Jumping)
-        //             currentState = State.Running;
-        //     }
-        //     else 
-        //     {
-        //         controller.Move(move * speed / 2 * Time.deltaTime);
-        //         if (currentState != State.Jumping)
-        //             currentState = State.Walking;
-        //     }
-            
-        // }
-        // GroundCheck();
-        // if (Input.GetButtonDown("Jump") && isGrounded)
-        // {
-        //     velocity.y = Mathf.Sqrt(jumpHeight * (-2f) * gravity);
-        //     // currentState = State.Jumping;
-        // }
-
-        // velocity.y += gravity * Time.deltaTime;
-        // controller.Move(velocity * Time.deltaTime);
-    }
     void GroundCheck()
     {
         var curCheck = Physics.CheckSphere(groundCheck.position,groundDistance,groundMask);
@@ -88,7 +54,7 @@ public class PlayerMove : MonoBehaviour
         
         Vector3 move = transform.right * x + transform.forward * z;
 
-        if(move != Vector3.zero && !GetComponent<AtackManager>().isAtacking())
+        if(move != Vector3.zero && !GetComponent<AtackManager>().isAtacking() && !GetComponent<AtackManager>().isBlocking())
         {   
             if (!GetComponent<WeaponManager>().isArmed())
             {

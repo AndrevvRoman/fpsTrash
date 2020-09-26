@@ -23,7 +23,14 @@ public class HealthManager : MonoBehaviour
     }
     public void GetDamage()
     {
-        _health--;
-        SendMessage("GotDamage");
+        if (_isAlive)
+        {
+            _health--;
+            SendMessage("GotDamage");
+        }
+    }
+    public bool Alive()
+    {
+        return _isAlive;
     }
 }

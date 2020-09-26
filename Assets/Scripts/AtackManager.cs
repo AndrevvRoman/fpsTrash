@@ -6,16 +6,16 @@ public class AtackManager : MonoBehaviour
 {
     WeaponManager _weaponManager;
     bool _isAttacking = false;
+    bool _isBlocking = false;
 
     void Start()
     {
         _weaponManager = GetComponent<WeaponManager>();
-
     }
 
     void Update()
     {
-        if(Input.GetButtonDown("Fire1") && _weaponManager.isArmed())
+        if(Input.GetButtonDown("Fire1") && _weaponManager.isArmed() && !_isBlocking)
         {
             _isAttacking = true;
             SendMessage("StartAttacking");
@@ -25,11 +25,27 @@ public class AtackManager : MonoBehaviour
             _isAttacking = false;
             SendMessage("StopAttacking");
         }
+
+        if(Input.GetButtonDown("Fire2") && _weaponManager.isArmed() && !_isAttacking)
+        {
+            _isBlocking = true;
+            SendMessage("StartBlocking");
+        }
+        if(Input.GetButtonUp("Fire2"))
+        {
+            _isBlocking = false;
+            SendMessage("StopBlocking");
+            Debug.Log("released");
+        }
     }
 
     public bool isAtacking()
     {
         return _isAttacking;
+    }
+    public bool isBlocking()
+    {
+        return _isBlocking;
     }
     void OnCollisionEnter(Collision collision)
     {
