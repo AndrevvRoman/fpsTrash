@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class AtackManager : MonoBehaviour
+public class AtackManager : NetworkBehaviour
 {
     WeaponManager _weaponManager;
     bool _isAttacking = false;
@@ -13,8 +14,8 @@ public class AtackManager : MonoBehaviour
         _weaponManager = GetComponent<WeaponManager>();
     }
 
-    void Update()
-    {
+    public void UpdateAtack()
+    {   
         if(Input.GetButtonDown("Fire1") && _weaponManager.isArmed() && !_isBlocking)
         {
             _isAttacking = true;
@@ -35,7 +36,6 @@ public class AtackManager : MonoBehaviour
         {
             _isBlocking = false;
             SendMessage("StopBlocking");
-            Debug.Log("released");
         }
     }
 

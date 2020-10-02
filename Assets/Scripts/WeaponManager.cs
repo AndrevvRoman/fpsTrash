@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class WeaponManager : MonoBehaviour
+public class WeaponManager : NetworkBehaviour
 {    
-    bool _isArmed = false;
+    [SyncVar] bool _isArmed = false;
     GameObject _weapon;
     void Start()
     {

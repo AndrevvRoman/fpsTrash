@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class AnimationManager : MonoBehaviour
+public class AnimationManager : NetworkBehaviour
 {
     Animator animanor;
     PlayerMove playerMover;
@@ -132,6 +133,11 @@ public class AnimationManager : MonoBehaviour
     public void GotDamage()
     {
         animanor.SetTrigger("GotDamage");
+    }
+
+    public void BlockedDamage()
+    {
+        animanor.SetTrigger("BlockedDamage");
     }
 
     public void Die()

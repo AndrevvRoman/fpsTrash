@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class HitCheck : MonoBehaviour
+public class HitCheck : NetworkBehaviour
 {
     AtackManager _atackManager;
     float m_lastHitTime = 0f;
