@@ -14,7 +14,7 @@ public class PlayerMove : NetworkBehaviour
     public LayerMask groundMask;
     Vector3 velocity;
     bool isGrounded;
-    public State currentState;
+    [SyncVar] public State currentState;
     void GroundCheck()
     {
         var curCheck = Physics.CheckSphere(groundCheck.position,groundDistance,groundMask);
@@ -22,11 +22,11 @@ public class PlayerMove : NetworkBehaviour
         {
             if(curCheck == true)
             {
-                currentState = State.Grounded;
+                CmdSetState(State.Grounded);
             }
             else
             {
-                currentState = State.Jumping;
+                CmdSetState(State.Jumping);
             }
             isGrounded = curCheck;
         }
@@ -36,7 +36,7 @@ public class PlayerMove : NetworkBehaviour
         }
         if (velocity.y < -0.8f)
         {
-            currentState = State.Jumping;
+            CmdSetState(State.Jumping);
         }
 
     }
@@ -50,7 +50,7 @@ public class PlayerMove : NetworkBehaviour
     }
     public void UpdateMovment(float x,float z)
     {
-        currentState = State.Idle;
+        CmdSetState(State.Idle);
         
         Vector3 move = transform.right * x + transform.forward * z;
 
@@ -60,13 +60,13 @@ public class PlayerMove : NetworkBehaviour
             {
                 controller.Move(move * speed * Time.deltaTime);
                 if (currentState != State.Jumping)
-                    currentState = State.Running;
+                    CmdSetState(State.Running);
             }
             else 
             {
                 controller.Move(move * speed / 2 * Time.deltaTime);
                 if (currentState != State.Jumping)
-                    currentState = State.Walking;
+                    CmdSetState(State.Walking);
             }
             
         }
@@ -82,5 +82,12 @@ public class PlayerMove : NetworkBehaviour
             velocity.y = -19f;
         } 
         controller.Move(velocity * Time.deltaTime);
+
+    }
+
+    [Command]
+    protected void CmdSetState(State state)
+    {
+        currentState = state;
     }
 }

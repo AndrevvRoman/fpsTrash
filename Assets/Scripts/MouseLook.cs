@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-public class MouseLook : NetworkBehaviour
+public class MouseLook : MonoBehaviour
 {
     float xRotation = 0;
     public float mouseSens = 100f;

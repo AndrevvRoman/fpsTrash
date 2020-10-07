@@ -10,107 +10,114 @@ public class AnimationManager : NetworkBehaviour
     State lastKnownState;
     HealthManager m_healthManager;
     float timeSinceLastTrigger;
-    public bool isArmed = true;
-    bool _isAttacking = false;
-    bool _isBlocking = false;
+    [SyncVar] bool _isArmed = false;
+    [SyncVar] bool _isAttacking = false;
+    [SyncVar] bool _isBlocking = false;
+
     void Start()
     {
-        animanor = GetComponentInChildren<Animator>();
+        animanor = GetComponent<Animator>();
         playerMover = GetComponent<PlayerMove>();
         m_healthManager = GetComponent<HealthManager>();
         lastKnownState = playerMover.GetState();
     }
     void UpdateUnArmed(State state)
     {
-        switch(state)
+        switch (state)
         {
             case State.Idle:
-            animanor.SetBool("isIdle",true);
-            animanor.SetBool("isRunning",false);
-            animanor.SetBool("isJumping",false);
-            animanor.SetBool("hasGrounded",false);
-            break;
+                animanor.SetBool("isIdle", true);
+                animanor.SetBool("isRunning", false);
+                animanor.SetBool("isJumping", false);
+                animanor.SetBool("hasGrounded", false);
+                break;
             case State.Running:
-            animanor.SetBool("isIdle",false);
-            animanor.SetBool("isRunning",true);
-            break;
+                animanor.SetBool("isIdle", false);
+                animanor.SetBool("isRunning", true);
+                break;
             case State.Jumping:
-            animanor.SetBool("isIdle",false);
-            animanor.SetBool("isJumping",true);
-            animanor.SetBool("isRunning",false);
-            animanor.SetBool("hasGrounded",false);
-            break;
+                animanor.SetBool("isIdle", false);
+                animanor.SetBool("isJumping", true);
+                animanor.SetBool("isRunning", false);
+                animanor.SetBool("hasGrounded", false);
+                break;
             case State.Grounded:
-            animanor.SetBool("isIdle",false);
-            animanor.SetBool("hasGrounded",true);
-            animanor.SetBool("isJumping",false);
-            break;
+                animanor.SetBool("isIdle", false);
+                animanor.SetBool("hasGrounded", true);
+                animanor.SetBool("isJumping", false);
+                break;
         }
     }
     void UpdateArmed(State state)
     {
         if (_isAttacking)
         {
-            animanor.SetBool("isAttacking",true);
+            animanor.SetBool("isAttacking", true);
         }
         else
         {
-            animanor.SetBool("isAttacking",false);
+            animanor.SetBool("isAttacking", false);
         }
         if (_isBlocking)
         {
-            animanor.SetBool("isBlocking",true);
+            animanor.SetBool("isBlocking", true);
         }
         else
         {
-            animanor.SetBool("isBlocking",false);
+            animanor.SetBool("isBlocking", false);
         }
-        switch(state)
+        switch (state)
         {
             case State.Walking:
-            animanor.SetBool("isWalking",true);
-            animanor.SetBool("isIdle",false);
-            break;
+                animanor.SetBool("isWalking", true);
+                animanor.SetBool("isIdle", false);
+                break;
             case State.Idle:
-            animanor.SetBool("isIdle",true);
-            animanor.SetBool("isWalking",false);
-            break;
+                animanor.SetBool("isIdle", true);
+                animanor.SetBool("isWalking", false);
+                break;
             case State.Jumping:
-            animanor.SetBool("isIdle",false);
-            animanor.SetBool("isJumping",true);
-            animanor.SetBool("isRunning",false);
-            animanor.SetBool("hasGrounded",false);
-            break;
+                animanor.SetBool("isIdle", false);
+                animanor.SetBool("isJumping", true);
+                animanor.SetBool("isRunning", false);
+                animanor.SetBool("hasGrounded", false);
+                break;
             case State.Grounded:
-            animanor.SetBool("isIdle",false);
-            animanor.SetBool("hasGrounded",true);
-            animanor.SetBool("isJumping",false);
-            break;
+                animanor.SetBool("isIdle", false);
+                animanor.SetBool("hasGrounded", true);
+                animanor.SetBool("isJumping", false);
+                break;
         }
     }
     void UpdateAnimation(State state)
     {
-        animanor.SetBool("isArmed",isArmed);
-        switch(isArmed)
+        animanor.SetBool("isArmed", _isArmed);
+        switch (_isArmed)
         {
             case false:
-            UpdateUnArmed(state);
-            break;
+                UpdateUnArmed(state);
+                break;
             case true:
-            UpdateArmed(state);
-            break;
+                UpdateArmed(state);
+                break;
         }
     }
+    [ClientCallback]
     void Update()
     {
+        if(!hasAuthority) { return; }
+        
         var curState = playerMover.GetState();
         lastKnownState = curState;
-        if(m_healthManager.Alive())
+        //CmdChangeState(_isArmed, _isAttacking, _isBlocking);
+        if (m_healthManager.Alive())
             UpdateAnimation(lastKnownState);
+        
     }
     public void SwitchArmed()
     {
-        isArmed = !isArmed;
+        Debug.Log("Swithced Weapon");
+        _isArmed = !_isArmed;
     }
     public void StartAttacking()
     {
@@ -120,7 +127,6 @@ public class AnimationManager : NetworkBehaviour
     {
         _isAttacking = false;
     }
-
     public void StartBlocking()
     {
         _isBlocking = true;
@@ -129,19 +135,40 @@ public class AnimationManager : NetworkBehaviour
     {
         _isBlocking = false;
     }
-
     public void GotDamage()
     {
         animanor.SetTrigger("GotDamage");
     }
-
     public void BlockedDamage()
     {
         animanor.SetTrigger("BlockedDamage");
     }
-
     public void Die()
     {
         animanor.SetTrigger("Die");
     }
+
+
+    //public delegate void StateChangedDelegate(bool isArmed, bool isAttacking, bool isBlocking);
+
+    //[SyncEvent]
+    //public event StateChangedDelegate EventStateChanged;
+
+    //#region Server
+
+    //[Server]
+    //private void SetStates(bool isArmed, bool isAttacking, bool isBlocking)
+    //{
+    //    Debug.Log("In setStates");
+    //    _isArmed = isArmed;
+    //    _isAttacking = isAttacking;
+    //    _isBlocking = isBlocking;
+    //    EventStateChanged?.Invoke(_isArmed, _isAttacking, _isBlocking);
+    //}
+
+    //public override void OnStartServer() => SetStates(false, false, false);
+
+    //[Command]
+    //private void CmdChangeState(bool _1, bool _2, bool _3) => SetStates(_1, _2, _3);
+    //#endregion
 }
