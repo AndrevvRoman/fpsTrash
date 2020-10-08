@@ -25,6 +25,23 @@ public class HealthManager : NetworkBehaviour
     }
     public void GetDamage()
     {
+        CmdHandleDamage();
+    }
+    public bool Alive()
+    {
+        return _isAlive;
+    }
+
+    public delegate void GetDamageDelegate();
+
+    [SyncEvent]
+    public event GetDamageDelegate EventGetDamage;
+
+    #region Server
+
+    [Server]
+    private void HandleDamage()
+    {
         if (_isAlive)
         {
             if (!GetComponent<AtackManager>().isBlocking())
@@ -37,9 +54,10 @@ public class HealthManager : NetworkBehaviour
                 SendMessage("BlockedDamage");
             }
         }
+        EventGetDamage?.Invoke();
     }
-    public bool Alive()
-    {
-        return _isAlive;
-    }
+
+    [Command]
+    private void CmdHandleDamage() => HandleDamage();
+    #endregion
 }

@@ -13,12 +13,16 @@ public class HitCheck : NetworkBehaviour
         m_lastHitTime = Time.time;
         _atackManager = GetComponentInParent<AtackManager>();
     }
-    void OnCollisionExit(Collision collision)
+    void OnTriggerExit(Collider collision)
     {
+        Debug.Log("Hit");
         if(collision.gameObject.tag == "Robot" && Time.time - m_lastHitTime > m_hitDelay)
-        {   
+        {
+            Debug.Log("this = " + this.gameObject);
+            Debug.Log("Coll = " + collision.gameObject.GetInstanceID());
             m_lastHitTime = Time.time;
             _atackManager.MakeHit(collision.gameObject);
         }
+        //Physics.IgnoreCollision(collision.collider, GetComponent<Collider>(),false);
     }
 }

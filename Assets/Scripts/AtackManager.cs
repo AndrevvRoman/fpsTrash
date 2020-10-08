@@ -47,13 +47,6 @@ public class AtackManager : NetworkBehaviour
     {
         return _isBlocking;
     }
-    void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.tag == "Robot")
-        {
-            Debug.Log("Attacking");
-        }
-    }
     public void MakeHit(GameObject target)
     {
         if(_isAttacking)
