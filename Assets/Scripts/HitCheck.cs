@@ -18,8 +18,8 @@ public class HitCheck : NetworkBehaviour
         Debug.Log("Hit");
         if(collision.gameObject.tag == "Robot" && Time.time - m_lastHitTime > m_hitDelay)
         {
-            Debug.Log("this = " + this.gameObject);
-            Debug.Log("Coll = " + collision.gameObject.GetInstanceID());
+            //Debug.Log("this = " + this.gameObject);
+            //Debug.Log("Coll = " + collision.gameObject.GetInstanceID());
             m_lastHitTime = Time.time;
             _atackManager.MakeHit(collision.gameObject);
         }

@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class WeaponManager : NetworkBehaviour
 {    
-    [SyncVar] bool _isArmed = false;
+    [SyncVar(hook = "OnArmedChanged")] bool _isArmed = false;
     GameObject _weapon;
     void Start()
     {
@@ -15,7 +15,7 @@ public class WeaponManager : NetworkBehaviour
     public void UpdateWeapon()
     {
         if (Input.GetKeyDown(KeyCode.H))
-        {   
+        {
             CmdChangeArmed();
         }
     }
@@ -24,24 +24,23 @@ public class WeaponManager : NetworkBehaviour
         return _isArmed;
     }
 
-    public delegate void StateChangedDelegate(bool isArmed);
-
-    [SyncEvent]
-    public event StateChangedDelegate EventStateChanged;
-
-    #region Server
-
-    [Server]
-    private void SetStates()
+    public void OnArmedChanged(bool isArmed)
     {
-        Debug.Log("In setStates");
+        _isArmed = isArmed;
+        _weapon.SetActive(_isArmed);
+    }
+
+    public void ChangeArmed()
+    {
+        Debug.Log("In setArmed");
         _isArmed = !_isArmed;
         _weapon.SetActive(_isArmed);
         SendMessage("SwitchArmed");
-        EventStateChanged?.Invoke(_isArmed);
     }
 
     [Command]
-    private void CmdChangeArmed() => SetStates();
-    #endregion
+    void CmdChangeArmed()
+    {
+        ChangeArmed();
+    }
 }
