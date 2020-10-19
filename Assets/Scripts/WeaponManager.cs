@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class WeaponManager : NetworkBehaviour
-{    
-    [SyncVar(hook = "OnArmedChanged")] bool _isArmed = false;
-    GameObject _weapon;
+{
+    [SyncVar(hook =nameof(OnArmedChanged))] bool _isArmed = false;
+    public GameObject _weapon;
     void Start()
     {
-        _weapon = GameObject.FindWithTag("Weapon");
+        //_weapon = GameObject.FindWithTag("Weapon");
         _weapon.SetActive(_isArmed);
     }
     public void UpdateWeapon()
@@ -24,23 +24,37 @@ public class WeaponManager : NetworkBehaviour
         return _isArmed;
     }
 
-    public void OnArmedChanged(bool isArmed)
+    public void OnArmedChanged(bool oldValue, bool newValue)
     {
-        _isArmed = isArmed;
+        _isArmed = newValue;
         _weapon.SetActive(_isArmed);
     }
 
     public void ChangeArmed()
     {
-        Debug.Log("In setArmed");
         _isArmed = !_isArmed;
         _weapon.SetActive(_isArmed);
         SendMessage("SwitchArmed");
     }
 
+    #region ServerCommands
     [Command]
     void CmdChangeArmed()
     {
-        ChangeArmed();
+        _isArmed = !_isArmed;
+        _weapon.SetActive(_isArmed);
+        SendMessage("SwitchArmed");
+        TargetChangeArmed();
     }
+    #endregion
+
+    #region ClientRPC
+    [TargetRpc]
+    void TargetChangeArmed()
+    {
+
+        _weapon.SetActive(_isArmed);
+    }
+    #endregion
+
 }

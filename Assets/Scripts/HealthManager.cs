@@ -1,12 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class HealthManager : NetworkBehaviour
 {
-   [SyncVar(hook = "OnHealthChanged")] int _health = 3;
-   [SyncVar(hook = "OnAliveChanged")] bool _isAlive = true;
+   [SyncVar] int _health = 3;
+   [SyncVar] bool _isAlive = true;
     AtackManager _attackManager;
 
     void Update()
@@ -50,13 +50,11 @@ public class HealthManager : NetworkBehaviour
 
     public void OnHealthChanged(int health)
     {
-        Debug.Log("InHealthChanged");
         _health = health;
         SendMessage("GetDamage");
     }
     public void OnAliveChanged(bool alive)
     {
-        Debug.Log("InHealthChanged");
         _isAlive = alive;
         //SendMessage("GetDamage");
     }
@@ -65,7 +63,6 @@ public class HealthManager : NetworkBehaviour
     [Command]
     void CmdHandleDamage()
     {
-        Debug.Log("HandlingDamage");
         if (_isAlive)
         {
             if (!GetComponent<AtackManager>().isBlocking())

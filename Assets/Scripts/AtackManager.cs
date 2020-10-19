@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class AtackManager : NetworkBehaviour
 {
@@ -52,7 +52,6 @@ public class AtackManager : NetworkBehaviour
         if(_isAttacking)
         {
             target.SendMessage("GetDamage");
-            Debug.Log("Make Hit");
         }
     }
 }
