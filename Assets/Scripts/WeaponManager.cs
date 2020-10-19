@@ -44,7 +44,7 @@ public class WeaponManager : NetworkBehaviour
         _isArmed = !_isArmed;
         _weapon.SetActive(_isArmed);
         SendMessage("SwitchArmed");
-        TargetChangeArmed();
+        //TargetChangeArmed();
     }
     #endregion
 
@@ -52,7 +52,6 @@ public class WeaponManager : NetworkBehaviour
     [TargetRpc]
     void TargetChangeArmed()
     {
-
         _weapon.SetActive(_isArmed);
     }
     #endregion
