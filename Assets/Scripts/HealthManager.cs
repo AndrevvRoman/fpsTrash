@@ -5,12 +5,19 @@ using Mirror;
 
 public class HealthManager : NetworkBehaviour
 {
-   [SyncVar] int _health = 3;
-   [SyncVar] bool _isAlive = true;
+    [SyncVar(hook = nameof(OnHealthChanged))] int _health = 3;
+    [SyncVar] bool _isAlive = true;
+    bool _isAttacked = false;
     AtackManager _attackManager;
 
     void Update()
     {
+        if (_isAttacked)
+        {
+            Debug.Log("Sending cmd");
+            CmdHandleDamage();
+            _isAttacked = false;
+        }
         if (_health == 0 && _isAlive)
         {
             _isAlive = false;
@@ -28,19 +35,7 @@ public class HealthManager : NetworkBehaviour
 
     public void GetDamage()
     {
-        //if (_isAlive)
-        //{
-        //    if (!GetComponent<AtackManager>().isBlocking())
-        //    {
-        //        //_health--;
-        //        SendMessage("GotDamage");
-        //    }
-        //    else
-        //    {
-        //        SendMessage("BlockedDamage");
-        //    }
-        //}
-        CmdHandleDamage();
+        _isAttacked = true;
     }
 
     public bool Alive()
@@ -48,21 +43,22 @@ public class HealthManager : NetworkBehaviour
         return _isAlive;
     }
 
-    public void OnHealthChanged(int health)
+    public void OnHealthChanged(int oldHealth, int newHealth)
     {
-        _health = health;
+        _health = newHealth;
         SendMessage("GetDamage");
     }
+
     public void OnAliveChanged(bool alive)
     {
         _isAlive = alive;
         //SendMessage("GetDamage");
     }
 
-
-    [Command]
+    
     void CmdHandleDamage()
     {
+        Debug.Log("HandlingDamage");
         if (_isAlive)
         {
             if (!GetComponent<AtackManager>().isBlocking())
@@ -76,4 +72,6 @@ public class HealthManager : NetworkBehaviour
             }
         }
     }
+
+
 }

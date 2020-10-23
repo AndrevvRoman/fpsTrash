@@ -9,7 +9,6 @@ public class WeaponManager : NetworkBehaviour
     public GameObject _weapon;
     void Start()
     {
-        //_weapon = GameObject.FindWithTag("Weapon");
         _weapon.SetActive(_isArmed);
     }
     public void UpdateWeapon()
@@ -44,7 +43,6 @@ public class WeaponManager : NetworkBehaviour
         _isArmed = !_isArmed;
         _weapon.SetActive(_isArmed);
         SendMessage("SwitchArmed");
-        //TargetChangeArmed();
     }
     #endregion
 
