@@ -51,6 +51,7 @@ public class AtackManager : NetworkBehaviour
     {
         if (_isAttacking)
         {
+            //Debug.Log("Sent CMD hit");
             CmdSendHitToTarget(target);
         }
     }
@@ -58,6 +59,7 @@ public class AtackManager : NetworkBehaviour
     [Command]
     void CmdSendHitToTarget(GameObject target)
     {
+        //Debug.Log("Handle CMD hit");
         target.SendMessage("GetDamage");
     }
 }

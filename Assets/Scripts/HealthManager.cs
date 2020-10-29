@@ -5,8 +5,8 @@ using Mirror;
 
 public class HealthManager : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnHealthChanged))] int _health = 3;
-    [SyncVar] bool _isAlive = true;
+    [SyncVar(hook = nameof(OnHealthChanged))] int _health = 2;
+    [SyncVar(hook = nameof(OnAliveChanged))] bool _isAlive = true;
     bool _isAttacked = false;
     AtackManager _attackManager;
 
@@ -14,23 +14,37 @@ public class HealthManager : NetworkBehaviour
     {
         if (_isAttacked)
         {
-            Debug.Log("Sending cmd");
-            CmdHandleDamage();
             _isAttacked = false;
+            TakeDamage();
         }
         if (_health == 0 && _isAlive)
         {
-            _isAlive = false;
-            StartCoroutine(_Die());
+            _isAttacked = false;
+            CmdDie();
         }
     }
 
     IEnumerator _Die()
     {
-        Debug.Log("Im dead");
         SendMessage("Die");
         yield return new WaitForSeconds(3f);
-        Destroy(this.gameObject);
+        //NetworkServer.Destroy(this.gameObject);
+    }
+
+    void TakeDamage()
+    {
+        if (_isAlive)
+        {
+            if (!GetComponent<AtackManager>().isBlocking())
+            {
+                _health--;
+                SendMessage("GotDamage");
+            }
+            else
+            {
+                SendMessage("BlockedDamage");
+            }
+        }
     }
 
     public void GetDamage()
@@ -45,32 +59,23 @@ public class HealthManager : NetworkBehaviour
 
     public void OnHealthChanged(int oldHealth, int newHealth)
     {
+        //Debug.Log("Handling Health Change");
         _health = newHealth;
-        SendMessage("GetDamage");
+        SendMessage("GotDamage");  
     }
 
-    public void OnAliveChanged(bool alive)
+    public void OnAliveChanged(bool oldAlive, bool newAlive)
     {
-        _isAlive = alive;
-        //SendMessage("GetDamage");
+        Debug.Log("Handling Alive Change");
+        _isAlive = newAlive;
+        StartCoroutine(_Die());
     }
 
-    
-    void CmdHandleDamage()
+    [Command]
+    void CmdDie()
     {
-        Debug.Log("HandlingDamage");
-        if (_isAlive)
-        {
-            if (!GetComponent<AtackManager>().isBlocking())
-            {
-                _health--;
-                SendMessage("GotDamage");
-            }
-            else
-            {
-                SendMessage("BlockedDamage");
-            }
-        }
+        _isAlive = false;
+        StartCoroutine(_Die());
     }
 
 

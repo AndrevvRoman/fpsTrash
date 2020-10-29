@@ -6,10 +6,13 @@ using Mirror;
 public class WeaponManager : NetworkBehaviour
 {
     [SyncVar(hook =nameof(OnArmedChanged))] bool _isArmed = false;
-    public GameObject _weapon;
+    public List<GameObject> _weapons;
     void Start()
     {
-        _weapon.SetActive(_isArmed);
+        foreach(GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
     }
     public void UpdateWeapon()
     {
@@ -26,13 +29,19 @@ public class WeaponManager : NetworkBehaviour
     public void OnArmedChanged(bool oldValue, bool newValue)
     {
         _isArmed = newValue;
-        _weapon.SetActive(_isArmed);
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
     }
 
     public void ChangeArmed()
     {
         _isArmed = !_isArmed;
-        _weapon.SetActive(_isArmed);
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
         SendMessage("SwitchArmed");
     }
 
@@ -41,7 +50,10 @@ public class WeaponManager : NetworkBehaviour
     void CmdChangeArmed()
     {
         _isArmed = !_isArmed;
-        _weapon.SetActive(_isArmed);
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
         SendMessage("SwitchArmed");
     }
     #endregion
@@ -50,7 +62,10 @@ public class WeaponManager : NetworkBehaviour
     [TargetRpc]
     void TargetChangeArmed()
     {
-        _weapon.SetActive(_isArmed);
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
     }
     #endregion
 
