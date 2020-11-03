@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class AtackManager : NetworkBehaviour
 {
@@ -15,24 +15,24 @@ public class AtackManager : NetworkBehaviour
     }
 
     public void UpdateAtack()
-    {   
-        if(Input.GetButtonDown("Fire1") && _weaponManager.isArmed() && !_isBlocking)
+    {
+        if (Input.GetButtonDown("Fire1") && _weaponManager.isArmed() && !_isBlocking)
         {
             _isAttacking = true;
             SendMessage("StartAttacking");
         }
-        if(Input.GetButtonUp("Fire1"))
+        if (Input.GetButtonUp("Fire1"))
         {
             _isAttacking = false;
             SendMessage("StopAttacking");
         }
 
-        if(Input.GetButtonDown("Fire2") && _weaponManager.isArmed() && !_isAttacking)
+        if (Input.GetButtonDown("Fire2") && _weaponManager.isArmed() && !_isAttacking)
         {
             _isBlocking = true;
             SendMessage("StartBlocking");
         }
-        if(Input.GetButtonUp("Fire2"))
+        if (Input.GetButtonUp("Fire2"))
         {
             _isBlocking = false;
             SendMessage("StopBlocking");
@@ -49,10 +49,17 @@ public class AtackManager : NetworkBehaviour
     }
     public void MakeHit(GameObject target)
     {
-        if(_isAttacking)
+        if (_isAttacking)
         {
-            target.SendMessage("GetDamage");
-            Debug.Log("Make Hit");
+            //Debug.Log("Sent CMD hit");
+            CmdSendHitToTarget(target);
         }
+    }
+
+    [Command]
+    void CmdSendHitToTarget(GameObject target)
+    {
+        //Debug.Log("Handle CMD hit");
+        target.SendMessage("GetDamage");
     }
 }

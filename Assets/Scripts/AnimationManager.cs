@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class AnimationManager : NetworkBehaviour
 {
@@ -116,7 +116,6 @@ public class AnimationManager : NetworkBehaviour
     }
     public void SwitchArmed()
     {
-        Debug.Log("Swithced Weapon");
         _isArmed = !_isArmed;
     }
     public void StartAttacking()
@@ -146,6 +145,10 @@ public class AnimationManager : NetworkBehaviour
     public void Die()
     {
         animanor.SetTrigger("Die");
+    }
+    public void BackToLive()
+    {
+        animanor.SetTrigger("BackToLive");
     }
 
 

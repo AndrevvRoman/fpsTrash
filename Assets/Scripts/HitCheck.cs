@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class HitCheck : NetworkBehaviour
 {
@@ -15,14 +15,10 @@ public class HitCheck : NetworkBehaviour
     }
     void OnTriggerExit(Collider collision)
     {
-        Debug.Log("Hit");
         if(collision.gameObject.tag == "Robot" && Time.time - m_lastHitTime > m_hitDelay)
         {
-            //Debug.Log("this = " + this.gameObject);
-            //Debug.Log("Coll = " + collision.gameObject.GetInstanceID());
             m_lastHitTime = Time.time;
             _atackManager.MakeHit(collision.gameObject);
         }
-        //Physics.IgnoreCollision(collision.collider, GetComponent<Collider>(),false);
     }
 }

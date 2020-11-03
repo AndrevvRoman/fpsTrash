@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
+using Mirror;
 
 public class WeaponManager : NetworkBehaviour
-{    
-    [SyncVar(hook = "OnArmedChanged")] bool _isArmed = false;
-    GameObject _weapon;
+{
+    [SyncVar(hook =nameof(OnArmedChanged))] bool _isArmed = false;
+    public List<GameObject> _weapons;
     void Start()
     {
-        _weapon = GameObject.FindWithTag("Weapon");
-        _weapon.SetActive(_isArmed);
+        foreach(GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
     }
     public void UpdateWeapon()
     {
@@ -24,23 +26,47 @@ public class WeaponManager : NetworkBehaviour
         return _isArmed;
     }
 
-    public void OnArmedChanged(bool isArmed)
+    public void OnArmedChanged(bool oldValue, bool newValue)
     {
-        _isArmed = isArmed;
-        _weapon.SetActive(_isArmed);
+        _isArmed = newValue;
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
     }
 
     public void ChangeArmed()
     {
-        Debug.Log("In setArmed");
         _isArmed = !_isArmed;
-        _weapon.SetActive(_isArmed);
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
         SendMessage("SwitchArmed");
     }
 
+    #region ServerCommands
     [Command]
     void CmdChangeArmed()
     {
-        ChangeArmed();
+        _isArmed = !_isArmed;
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
+        SendMessage("SwitchArmed");
     }
+    #endregion
+
+    #region ClientRPC
+    [TargetRpc]
+    void TargetChangeArmed()
+    {
+        foreach (GameObject obj in _weapons)
+        {
+            obj.SetActive(_isArmed);
+        }
+    }
+    #endregion
+
 }
