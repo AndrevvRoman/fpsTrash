@@ -5,10 +5,16 @@ using Mirror;
 
 public class HealthManager : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(OnHealthChanged))] int _health = 2;
+    public int maxHealth = 3;
+    [SyncVar(hook = nameof(OnHealthChanged))] int _health;
     [SyncVar(hook = nameof(OnAliveChanged))] bool _isAlive = true;
     bool _isAttacked = false;
     AtackManager _attackManager;
+
+    void Start()
+    {
+        _health = maxHealth;
+    }
 
     void Update()
     {
@@ -28,7 +34,7 @@ public class HealthManager : NetworkBehaviour
     {
         SendMessage("Die");
         yield return new WaitForSeconds(3f);
-        //NetworkServer.Destroy(this.gameObject);
+        CmdRespawn();
     }
 
     void TakeDamage()
@@ -59,16 +65,30 @@ public class HealthManager : NetworkBehaviour
 
     public void OnHealthChanged(int oldHealth, int newHealth)
     {
-        //Debug.Log("Handling Health Change");
         _health = newHealth;
-        SendMessage("GotDamage");  
+        if (oldHealth > 0)
+        {
+            SendMessage("GotDamage");
+        }
+        else
+        {
+            Debug.Log("Looks like respawn in health");
+        }
     }
 
     public void OnAliveChanged(bool oldAlive, bool newAlive)
     {
-        Debug.Log("Handling Alive Change");
         _isAlive = newAlive;
-        StartCoroutine(_Die());
+        if (oldAlive == true)
+        {
+            Debug.Log("Handling Alive Change");
+            StartCoroutine(_Die());
+        }
+        else
+        {
+            Debug.Log("Looks like respawn in alive");
+            SendMessage("BackToLive");
+        }
     }
 
     [Command]
@@ -78,5 +98,24 @@ public class HealthManager : NetworkBehaviour
         StartCoroutine(_Die());
     }
 
+    [Command]
+    void CmdRespawn()
+    {
+        _isAlive = true;
+        _health = maxHealth;
+        RpcRespawn();   
+    }
+
+    [ClientRpc]
+    void RpcRespawn()
+    {
+        if (isLocalPlayer)
+        {
+            Debug.Log("Respawning in process");
+            Vector3 spawnpoint = Vector3.zero;
+            transform.position = spawnpoint;
+            SendMessage("BackToLive");
+        }
+    }
 
 }

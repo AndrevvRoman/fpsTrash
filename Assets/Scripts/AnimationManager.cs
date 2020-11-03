@@ -146,6 +146,10 @@ public class AnimationManager : NetworkBehaviour
     {
         animanor.SetTrigger("Die");
     }
+    public void BackToLive()
+    {
+        animanor.SetTrigger("BackToLive");
+    }
 
 
     //public delegate void StateChangedDelegate(bool isArmed, bool isAttacking, bool isBlocking);
