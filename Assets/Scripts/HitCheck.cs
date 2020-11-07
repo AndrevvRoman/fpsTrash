@@ -7,7 +7,7 @@ public class HitCheck : NetworkBehaviour
 {
     AtackManager _atackManager;
     float m_lastHitTime = 0f;
-    float m_hitDelay = 0.5f;
+    float m_hitDelay = 0.7f;
     void Start()
     {
         m_lastHitTime = Time.time;

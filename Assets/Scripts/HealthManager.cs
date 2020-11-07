@@ -9,11 +9,12 @@ public class HealthManager : NetworkBehaviour
     [SyncVar(hook = nameof(OnHealthChanged))] int _health;
     [SyncVar(hook = nameof(OnAliveChanged))] bool _isAlive = true;
     bool _isAttacked = false;
-    AtackManager _attackManager;
+    private ScoreManager m_scoreManager;
 
     void Start()
     {
         _health = maxHealth;
+        m_scoreManager = GameObject.FindGameObjectWithTag("ScoreBoard").GetComponent<ScoreManager>();
     }
 
     void Update()
@@ -70,10 +71,6 @@ public class HealthManager : NetworkBehaviour
         {
             SendMessage("GotDamage");
         }
-        else
-        {
-            Debug.Log("Looks like respawn in health");
-        }
     }
 
     public void OnAliveChanged(bool oldAlive, bool newAlive)
@@ -81,12 +78,10 @@ public class HealthManager : NetworkBehaviour
         _isAlive = newAlive;
         if (oldAlive == true)
         {
-            Debug.Log("Handling Alive Change");
             StartCoroutine(_Die());
         }
         else
         {
-            Debug.Log("Looks like respawn in alive");
             SendMessage("BackToLive");
         }
     }
@@ -103,17 +98,16 @@ public class HealthManager : NetworkBehaviour
     {
         _isAlive = true;
         _health = maxHealth;
-        RpcRespawn();   
+        m_scoreManager.AddScore(GetComponent<PlayerTeam>().GetTeam());
+        RpcRespawn(GetComponent<PlayerTeam>().startPos.position);   
     }
 
     [ClientRpc]
-    void RpcRespawn()
+    void RpcRespawn(Vector3 spawnPoint)
     {
         if (isLocalPlayer)
         {
-            Debug.Log("Respawning in process");
-            Vector3 spawnpoint = Vector3.zero;
-            transform.position = spawnpoint;
+            transform.position = spawnPoint;
             SendMessage("BackToLive");
         }
     }
